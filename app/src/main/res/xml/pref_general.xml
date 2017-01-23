@@ -1,0 +1,49 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="run_service_on_start"
+        android:summary="@string/pref_description_start_service"
+        android:title="@string/pref_title_start_service" />
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/pref_default_minumum_accuracy"
+        android:inputType="text"
+        android:key="minimum_accuracy"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_title_mininum_accuracy" />
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/pref_default_kalman_speed"
+        android:inputType="text"
+        android:key="kalman_speed"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_title_kalman_speed" />
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/pref_default_range_min"
+        android:inputType="text"
+        android:key="min_bound"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_title_range_min" />
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/pref_default_range_max"
+        android:inputType="text"
+        android:key="max_bound"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_title_range_max" />
+
+</PreferenceScreen>
