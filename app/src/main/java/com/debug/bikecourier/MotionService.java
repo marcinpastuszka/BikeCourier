@@ -414,20 +414,20 @@ public class MotionService extends Service implements
                 lastValuesList.add(getAccelerometer(id - i));
             }
             if(!profiles.isEmpty()){
-                ArrayList<Integer> cInt = new ArrayList<>();
+                ArrayList<Integer> counterList = new ArrayList<>();
                 for (Profile model : profiles) {
                     int counter = 0;
-                    for (int i = 0; i < 5; i++) {
+                    for (int i = 0; i < 10; i++) {
                         if (lastValuesList.get(i).getVector_length() < 1.2 * model.getVec_xy()[i]
                                 && lastValuesList.get(i).getVector_length() > 0.8 * model.getVec_xy()[i]) {
                             counter++;
                         }
                     }
-                    cInt.add(counter);
+                    counterList.add(counter);
                     if (counter >= 8) {
                         //return ON_BIKE;
                     }
-                    return Collections.max(cInt);
+                    return Collections.max(counterList);
                 }
             }
         }
