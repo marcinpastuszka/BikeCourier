@@ -96,6 +96,8 @@ public class MotionService extends Service implements
     private float[] rotation = new float[3];
     private boolean dataReady = false;
 
+    private long id = -1;
+
     private boolean detectionReady = false;
     private int detectionHelper = 0;
 
@@ -256,6 +258,7 @@ public class MotionService extends Service implements
                 lastLocation.reset();
             idTrace = -1;
             lastLocationEntry = -1;
+            id = -1;
         }
     }
 
@@ -354,13 +357,24 @@ public class MotionService extends Service implements
             System.arraycopy(event.values, 0, rotation, 0, event.values.length);
             imuLinearAcceleration.setGyroscope(rotation, System.nanoTime());
             linearAcceleration = imuLinearAcceleration.getLinearAcceleration();
-            long id = createAccelerometer(idTrace, linearAcceleration[0],
+/*            id = createAccelerometer(idTrace, linearAcceleration[0],
                     linearAcceleration[1],
                     linearAcceleration[2],
                     Math.sqrt(Math.pow(linearAcceleration[0], 2)
                             + Math.pow(linearAcceleration[1], 2)
                             + Math.pow(linearAcceleration[2], 2)),
-                    System.currentTimeMillis());
+                    System.currentTimeMillis());*/
+            id = createAccelerometer(idTrace, linearAcceleration[0],
+                    linearAcceleration[1],
+                    linearAcceleration[2],
+                    Math.sqrt(Math.pow(linearAcceleration[0], 2)
+                            + Math.pow(linearAcceleration[1], 2)
+                            + Math.pow(linearAcceleration[2], 2)),
+                    0);
+            activityType = detectActivity(id);
+            Accelerometer a = getAccelerometer(id);
+            a.setTimestamp(activityType);
+            updateAccelerometer(a);
             /*float[] devRelativeAcc = new float[4], R = new float[16], I = new float[16],
                     inv = new float[16], earthRelativeAcc = new float[16];
 
@@ -378,8 +392,7 @@ public class MotionService extends Service implements
                     earthRelativeAcc[2],
                     Math.sqrt(Math.pow(earthRelativeAcc[0], 2)+ Math.pow(earthRelativeAcc[1], 2)),
                     System.currentTimeMillis());*/
-            activityType = detectActivity(id);
-            Log.d("counter", ""+activityType);
+            //activityType = detectActivity(id);
 /*            if(detectActivity(id) == ON_BIKE){
                 activityType = ON_BIKE;
             } else {
@@ -398,7 +411,6 @@ public class MotionService extends Service implements
             imuLinearAcceleration.setMagnetic(magnetic);
         }
     }
-
     private int detectActivity(long id){
         if(!detectionReady) {
             if (++detectionHelper >= 5) {
@@ -410,23 +422,31 @@ public class MotionService extends Service implements
         if(detectionReady) {
             detectionReady = false;
             ArrayList<Accelerometer> lastValuesList = new ArrayList<>();
-            for (int i = 9; i >= 0; i--) {
+            for (int i = 4; i >= 0; i--) {
                 lastValuesList.add(getAccelerometer(id - i));
             }
             if(!profiles.isEmpty()){
                 ArrayList<Integer> counterList = new ArrayList<>();
                 for (Profile model : profiles) {
                     int counter = 0;
-                    for (int i = 0; i < 10; i++) {
-                        if (lastValuesList.get(i).getVector_length() < 1.2 * model.getVec_xy()[i]
-                                && lastValuesList.get(i).getVector_length() > 0.8 * model.getVec_xy()[i]) {
+                    double temp = 0d;
+                    double temp2 = 0d;
+                    for (int i = 0; i < 5; i++) {
+                        temp += model.getVec_xy()[i];
+                        temp2 += lastValuesList.get(i).getVector_length();
+/*                        if (lastValuesList.get(i).getVector_length() < 1.4 * model.getVec_xy()[i]
+                                && lastValuesList.get(i).getVector_length() > 0.6 * model.getVec_xy()[i]) {
                             counter++;
-                        }
+                        }*/
+                        temp /=5;
+                        temp2 /=5;
+                        if (temp2 < 1.4*temp && temp2 < 0.6*temp )
+                            return 1;
                     }
                     counterList.add(counter);
-                    if (counter >= 8) {
+/*                    if (counter >= 8) {
                         //return ON_BIKE;
-                    }
+                    }*/
                     return Collections.max(counterList);
                 }
             }
@@ -448,10 +468,10 @@ public class MotionService extends Service implements
 
         Cursor c = getContentResolver().query(DatabaseProvider.CONTENT_URI_PROFILE, projection, null, null, null);
 
-        double[] x = new double[10];
-        double[] y = new double[10];
-        double[] z = new double[10];
-        double[] vec = new double[10];
+        double[] x = new double[5];
+        double[] y = new double[5];
+        double[] z = new double[5];
+        double[] vec = new double[5];
 
         ArrayList<Profile> profiles = new ArrayList<>();
 
@@ -463,7 +483,7 @@ public class MotionService extends Service implements
                     y[i] = c.getDouble(c.getColumnIndex(DatabaseProvider.KEY_Y));
                     z[i] = c.getDouble(c.getColumnIndex(DatabaseProvider.KEY_Z));
                     vec[i] = c.getDouble(c.getColumnIndex(DatabaseProvider.KEY_VECTOR_LENGTH));
-                    if(i == 9) {
+                    if(i == 4) {
                         i = 0;
                         Profile p = new Profile();
                         p.setP_id(c.getLong(c.getColumnIndex(DatabaseProvider.KEY_PROFILE_ID)));

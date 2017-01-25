@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, getString(R.string.google_play_services_not_available), Toast.LENGTH_SHORT).show();
             stopServices();
         }
+        //importProfilesFromCSV();
     }
 
     @Override
