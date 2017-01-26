@@ -62,7 +62,7 @@ public class TraceListFragment extends ListFragment implements SwipeRefreshLayou
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 currentPosition = position;
-                if ((((MainActivity) getActivity()).ismSeviceStarted()) && (((MainActivity) getActivity()).ismBound()))
+                if ((((MainActivity) getActivity()).ismServiceStarted()) && (((MainActivity) getActivity()).ismBound()))
                     if(((MainActivity) getActivity()).getmMotionService().getIdTrace() == arrayOfTraces.get(currentPosition).getId()){
                         Toast.makeText(getContext(), getString(R.string.delete_rationale), Toast.LENGTH_SHORT).show();
                         return true;

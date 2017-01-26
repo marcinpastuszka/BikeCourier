@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private TraceListFragment traceListFragment;
     private MotionService mMotionService;
     private boolean mBound = false;
-    private boolean mSeviceStarted = false;
+    private boolean mServiceStarted = false;
     private IntentFilter mFilter;
     private SharedPreferences preferences;
     protected static final int REQUEST_CHECK_SETTINGS = 1;
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if(savedInstanceState != null){
-            mSeviceStarted = savedInstanceState.getBoolean("serviceStarted", false);
+            mServiceStarted = savedInstanceState.getBoolean("serviceStarted", false);
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         traceListFragment = new TraceListFragment();
 
         if(isServiceRunning(MotionService.class)){
-            mSeviceStarted = true;
+            mServiceStarted = true;
         }
 
         if(!isGooglePlayServicesAvailable(this)){
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
-        outState.putBoolean("serviceStarted", mSeviceStarted);
+        outState.putBoolean("serviceStarted", mServiceStarted);
     }
 
     @Override
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         mFilter.addAction(Constants.CLEAR_MAP);
         LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, mFilter);
 
-        if(mSeviceStarted)
+        if(mServiceStarted)
             mapsFragment.changeStartButton();
     }
 
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (mSeviceStarted) {
+        if (mServiceStarted) {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.exit_title)
                     .setMessage(R.string.exit_message)
@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void startServices() {
-        mSeviceStarted = true;
+        mServiceStarted = true;
         Intent motionIntent = new Intent(MainActivity.this, MotionService.class);
         startService(motionIntent);
         mapsFragment.changeStartButton();
@@ -272,10 +272,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void stopServices() {
-        if (mSeviceStarted){
+        if (mServiceStarted){
             mMotionService.hideForegroundNotification();
             stopService(new Intent(MainActivity.this, MotionService.class));
-            mSeviceStarted = false;
+            mServiceStarted = false;
             mapsFragment.changeStartButton();
         }
     }
@@ -414,8 +414,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-    public boolean ismSeviceStarted() {
-        return mSeviceStarted;
+    public boolean ismServiceStarted() {
+        return mServiceStarted;
     }
 
     public boolean ismBound() {

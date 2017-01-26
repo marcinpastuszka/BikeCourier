@@ -235,7 +235,7 @@ public class MotionService extends Service implements
         startSensorUpdate();
         mTrackingStarted = true;
         mLastLocation = false;
-        detectionReady = false;
+        detectionHelper = 0;
         minimumAccuracy = Long.parseLong(preferences.getString("minimum_accuracy", getString(R.string.pref_default_minumum_accuracy)));
 
         //Init kalman filter
@@ -412,46 +412,30 @@ public class MotionService extends Service implements
         }
     }
     private int detectActivity(long id){
-        if(!detectionReady) {
-            if (++detectionHelper >= 5) {
-                detectionReady = true;
-                detectionHelper = 0;
-            }
-        }
-
-        if(detectionReady) {
-            detectionReady = false;
+        if(++detectionHelper >= 5) {
+            detectionHelper = 0;
             ArrayList<Accelerometer> lastValuesList = new ArrayList<>();
             for (int i = 4; i >= 0; i--) {
                 lastValuesList.add(getAccelerometer(id - i));
             }
             if(!profiles.isEmpty()){
-                ArrayList<Integer> counterList = new ArrayList<>();
                 for (Profile model : profiles) {
-                    int counter = 0;
-                    double temp = 0d;
-                    double temp2 = 0d;
+                    double modelValues = 0d;
+                    double lastValues = 0d;
                     for (int i = 0; i < 5; i++) {
-                        temp += model.getVec_xy()[i];
-                        temp2 += lastValuesList.get(i).getVector_length();
-/*                        if (lastValuesList.get(i).getVector_length() < 1.4 * model.getVec_xy()[i]
-                                && lastValuesList.get(i).getVector_length() > 0.6 * model.getVec_xy()[i]) {
-                            counter++;
-                        }*/
-                        temp /=5;
-                        temp2 /=5;
-                        if (temp2 < 1.4*temp && temp2 < 0.6*temp )
-                            return 1;
+                        modelValues += model.getVec_xy()[i];
+                        lastValues += lastValuesList.get(i).getVector_length();
+                        modelValues /= 5;
+                        lastValues /= 5;
+                        if (lastValues < 1.3 * modelValues && lastValues < 0.7 * modelValues )
+                            return ON_BIKE;
                     }
-                    counterList.add(counter);
-/*                    if (counter >= 8) {
-                        //return ON_BIKE;
-                    }*/
-                    return Collections.max(counterList);
                 }
             }
+            return UNKNOWN;
+        } else {
+            return activityType;
         }
-        return UNKNOWN;
     }
 
     //-------------------------------- DATABASE METHODS ----------------------------//
@@ -875,5 +859,11 @@ public class MotionService extends Service implements
         return getContentResolver().update(singleUri, values, null, null);
     }
 
+    public long deleteAccelerometer(long id) {
+        String selectionClause = null;
+        String[] selectionArgs = null;
+        Uri singleUri = ContentUris.withAppendedId(DatabaseProvider.CONTENT_URI_ACCELEROMETER, id);
 
+        return getContentResolver().delete(singleUri,selectionClause,selectionArgs);
+    }
 }

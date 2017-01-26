@@ -14,7 +14,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -124,7 +123,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Activi
             fab_start.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (((MainActivity) getActivity()).ismSeviceStarted()) {
+                    if (((MainActivity) getActivity()).ismServiceStarted()) {
                         ((MainActivity) getActivity()).stopServices();
                     } else {
                         ((MainActivity) getActivity()).startServices();
@@ -132,12 +131,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Activi
                 }
             });
 
-            if ((((MainActivity) getActivity()).ismSeviceStarted()))
+            if ((((MainActivity) getActivity()).ismServiceStarted()))
                 changeStartButton();
             fab_add.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if ((((MainActivity) getActivity()).ismSeviceStarted()) && (((MainActivity) getActivity()).ismBound())) {
+                    if ((((MainActivity) getActivity()).ismServiceStarted()) && (((MainActivity) getActivity()).ismBound())) {
                         if (((MainActivity) getActivity()).getmMotionService().isTrackingStarted()) {
                             ((MainActivity) getActivity()).getmMotionService().stopTraining();
                             Toast.makeText(getContext(), getString(R.string.stop_tracking), Toast.LENGTH_SHORT).show();
