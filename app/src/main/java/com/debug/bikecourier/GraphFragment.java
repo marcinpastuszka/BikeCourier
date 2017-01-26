@@ -76,7 +76,7 @@ public class GraphFragment extends Fragment {
                     entries.add(new Entry(i++, loc.getSpeed()));
                 }
 
-                LineDataSet dataSet = new LineDataSet(entries, "Location [kmh]");
+                LineDataSet dataSet = new LineDataSet(entries, "Speed [kmh]");
                 dataSet.setColor(Color.BLUE);
                 dataSet.setLineWidth(2);
                 dataSet.setCircleColor(Color.BLACK);
@@ -91,36 +91,35 @@ public class GraphFragment extends Fragment {
                 if (!accs.isEmpty()) {
                     long diff = accs.get(0).getTimestamp();
                     List<Entry> entries_x = new ArrayList<>();
-                    //List<Entry> entries_y = new ArrayList<>();
-                    //List<Entry> entries_z = new ArrayList<>();
+                    List<Entry> entries_y = new ArrayList<>();
+                    List<Entry> entries_z = new ArrayList<>();
 
                     long i = 0l;
                     for (Accelerometer acc : accs) {
-                        //entries_x.add(new Entry(i++, acc.getX()));
-                        entries_x.add(new Entry(i++, acc.getTimestamp()));
-                        //entries_y.add(new Entry(i++, acc.getY()));
-                        //entries_z.add(new Entry(i++, acc.getZ()));
+                        entries_x.add(new Entry(i++, acc.getX()));
+                        entries_y.add(new Entry(i++, acc.getY()));
+                        entries_z.add(new Entry(i++, acc.getZ()));
                     }
 
-                    LineDataSet dataSetx = new LineDataSet(entries_x, "X");
+                    LineDataSet dataSetx = new LineDataSet(entries_x, "Acceleration X");
                     dataSetx.setColor(Color.BLUE);
                     dataSetx.setLineWidth(2);
                     dataSetx.setCircleColor(Color.BLACK);
 
-/*                    LineDataSet dataSety = new LineDataSet(entries_y, "Y");
+                    LineDataSet dataSety = new LineDataSet(entries_y, "Acceleration Y");
                     dataSety.setColor(Color.RED);
                     dataSety.setLineWidth(2);
                     dataSety.setCircleColor(Color.BLACK);
 
-                    LineDataSet dataSetz = new LineDataSet(entries_z, "Z");
+                    LineDataSet dataSetz = new LineDataSet(entries_z, "Acceleration Z");
                     dataSetz.setColor(Color.GREEN);
                     dataSetz.setLineWidth(2);
-                    dataSetz.setCircleColor(Color.BLACK);*/
+                    dataSetz.setCircleColor(Color.BLACK);
 
                     List<ILineDataSet> dataSets = new ArrayList<>();
                     dataSets.add(dataSetx);
-                    //dataSets.add(dataSety);
-                    //dataSets.add(dataSetz);
+                    dataSets.add(dataSety);
+                    dataSets.add(dataSetz);
 
                     LineData lineData = new LineData(dataSets);
                     chart.setData(lineData);

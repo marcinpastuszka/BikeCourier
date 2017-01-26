@@ -100,6 +100,7 @@ public class MotionService extends Service implements
 
     private boolean detectionReady = false;
     private int detectionHelper = 0;
+    private int avgSpeedHelper = 0;
 
     private int activityType = 0;
     private ArrayList<LatLng> coordinateList;
@@ -236,6 +237,7 @@ public class MotionService extends Service implements
         mTrackingStarted = true;
         mLastLocation = false;
         detectionHelper = 0;
+        avgSpeedHelper = 0;
         minimumAccuracy = Long.parseLong(preferences.getString("minimum_accuracy", getString(R.string.pref_default_minumum_accuracy)));
 
         //Init kalman filter
@@ -298,9 +300,11 @@ public class MotionService extends Service implements
 
                 coordinateList.add(new LatLng(latLon[0], latLon[1]));
 
-                if (activityType == ON_BIKE && getLocations(lastLocationEntry).getType() == ON_BIKE) {
+                //if (activityType == ON_BIKE && getLocations(lastLocationEntry).getType() == ON_BIKE) {
+                if (activityType == ON_BIKE) {
+                    avgSpeedHelper++;
                     Trace tr = getTrace(idTrace);
-                    tr.setAvgspeed((tr.getAvgspeed() * (lastLocationEntry - 1) + location.getSpeed()) / lastLocationEntry);
+                    tr.setAvgspeed((tr.getAvgspeed() * (avgSpeedHelper - 1) + location.getSpeed()) / avgSpeedHelper);
                     if (location.getSpeed() > tr.getMaxspeed())
                         tr.setMaxspeed(location.getSpeed());
                     tr.setDistance(tr.getDistance() + distance_diff);
